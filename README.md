@@ -1,2 +1,2 @@
 # TheLateCommers
-## An amazin app
+## An amazing app
