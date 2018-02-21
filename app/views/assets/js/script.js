@@ -116,7 +116,7 @@ $(() => {
                 password: password,
               }),
             })
-            .done((data) => { resolve() })
+            .done((data) => { if (!data.error) { resolve() } else { reject(data.error) } })
             .fail((data) => { reject(data) });
         });
       }
