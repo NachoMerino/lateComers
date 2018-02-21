@@ -21,6 +21,7 @@ form {
 }
 
 .addNew{
+  margin-top: 1em;
   text-align: center;
 }
 
@@ -37,6 +38,7 @@ form {
 }
 
 .alert-danger {
+  margin-bottom: 1em;
   width: 100%;
 }
 

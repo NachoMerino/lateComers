@@ -84,6 +84,46 @@ $(() => {
     if (clickId === 'loginButton') {
       const user = $('#inputUsername').val();
       const password = $('#inputPassword').val();
+
+      function userAuth() {
+        $.ajax('/content', {
+            method: 'GET',
+            contentType: 'application/json',
+          })
+          .done((data) => {
+            if (!data.error) {
+              buildApp();
+              localStorage.setItem('adminLoged', JSON.stringify(data));
+            } else {
+              fail(data);
+            }
+          })
+          .fail((data) => {
+            if (data.status === 401) {
+              $('.alert-danger').remove();
+              $('.text-muted').prepend(fail('Unauthorized: You are not Admin'));
+            }
+          });
+      }
+
+      function userLogin() {
+        return new Promise((resolve, reject) => {
+          $.ajax('/login', {
+              method: 'POST',
+              contentType: 'application/json',
+              data: JSON.stringify({
+                username: user,
+                password: password,
+              }),
+            })
+            .done((data) => { resolve() })
+            .fail((data) => { reject(data) });
+        });
+      }
+      userLogin().then(() => { userAuth() }, (data) => { $pageContent.append(fail(data)) });
+
+      // old way no prmises
+      /*
       $.ajax('/login', {
           method: 'POST',
           contentType: 'application/json',
@@ -107,7 +147,10 @@ $(() => {
                 }
               })
               .fail((data) => {
-                fail(data.status);
+                if (data.status === 401) {
+                  $('.alert-danger').remove();
+                  $('.text-muted').prepend(fail('Unauthorized: You are not Admin'));
+                }
               });
           } else {
             $('.alert-danger').remove();
@@ -115,11 +158,11 @@ $(() => {
           }
         })
         .fail((data) => {
-          console.log(fail);
-          $pageContent.append(fail(data.status));
+          $pageContent.append(fail(data));
         });
     }
-
+*/
+    }
     // navbar buttons
     if (clickId === 'new') {
       buildApp();
