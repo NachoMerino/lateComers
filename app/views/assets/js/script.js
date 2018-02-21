@@ -85,7 +85,8 @@ $(() => {
       const user = $('#inputUsername').val();
       const password = $('#inputPassword').val();
 
-      function userAuth() {
+      // promises way to make ajax
+      let userAuth = () => {
         $.ajax('/content', {
             method: 'GET',
             contentType: 'application/json',
@@ -106,7 +107,7 @@ $(() => {
           });
       }
 
-      function userLogin() {
+      let userLogin = () => {
         return new Promise((resolve, reject) => {
           $.ajax('/login', {
               method: 'POST',
