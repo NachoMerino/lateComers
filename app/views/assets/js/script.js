@@ -85,44 +85,74 @@ $(() => {
       const user = $('#inputUsername').val();
       const password = $('#inputPassword').val();
 
-      // promises way to make ajax
-      let userAuth = () => {
-        $.ajax('/content', {
-            method: 'GET',
+      // async & await
+      async function userLogin() {
+        try {
+          const login = await $.ajax('/login', {
+            method: 'POST',
             contentType: 'application/json',
+            data: JSON.stringify({
+              username: user,
+              password: password,
+            }),
           })
-          .done((data) => {
-            if (!data.error) {
-              buildApp();
-              localStorage.setItem('adminLoged', JSON.stringify(data));
-            } else {
-              fail(data);
-            }
-          })
-          .fail((data) => {
-            if (data.status === 401) {
-              $('.alert-danger').remove();
-              $('.text-muted').prepend(fail('Unauthorized: You are not Admin'));
-            }
-          });
-      }
 
-      let userLogin = () => {
-        return new Promise((resolve, reject) => {
-          $.ajax('/login', {
-              method: 'POST',
+          const auth = await $.ajax('/content', {
+              method: 'GET',
               contentType: 'application/json',
-              data: JSON.stringify({
-                username: user,
-                password: password,
-              }),
             })
-            .done((data) => { if (!data.error) { resolve() } else { reject(data.error) } })
-            .fail((data) => { reject(data) });
-        });
+            .done((data) => {
+              if (!data.error) {
+                buildApp();
+                localStorage.setItem('adminLoged', JSON.stringify(data));
+              }
+            })
+        } catch (err) {
+          $('.alert-danger').remove();
+          $('.text-muted').prepend(fail(err.responseText));
+        }
       }
-      userLogin().then(() => { userAuth() }, (data) => { $pageContent.append(fail(data)) });
+      userLogin();
 
+      /*
+            // promises way to make ajax
+            let userAuth = () => {
+              $.ajax('/content', {
+                  method: 'GET',
+                  contentType: 'application/json',
+                })
+                .done((data) => {
+                  if (!data.error) {
+                    buildApp();
+                    localStorage.setItem('adminLoged', JSON.stringify(data));
+                  } else {
+                    fail(data);
+                  }
+                })
+                .fail((data) => {
+                  if (data.status === 401) {
+                    $('.alert-danger').remove();
+                    $('.text-muted').prepend(fail('Unauthorized: You are not Admin'));
+                  }
+                });
+            }
+
+            let userLogin = () => {
+              return new Promise((resolve, reject) => {
+                $.ajax('/login', {
+                    method: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify({
+                      username: user,
+                      password: password,
+                    }),
+                  })
+                  .done((data) => { if (!data.error) { resolve() } else { reject(data.error) } })
+                  .fail((data) => { reject(data) });
+              });
+            }
+            userLogin().then(() => { userAuth() }, (data) => { $pageContent.append(fail(data)) });
+      */
       // old way no prmises
       /*
       $.ajax('/login', {

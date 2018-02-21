@@ -56,7 +56,7 @@ function auth(req, res, next) {
   if (req.session && req.session.user === 'nacho' && req.session.admin) {
     return next();
   } else {
-    return res.sendStatus(401);
+    return res.status(401).send('you are not admin');;
   }
 }
 
@@ -69,7 +69,7 @@ router.post('/login', (req, res) => {
     res.sendStatus(200);
     console.log(JSON.stringify(req.session));
   } else {
-    res.json({ error: 'Wrong Username or Password' });
+    res.status(403).send('wrong pass/user');;
   }
 });
 
