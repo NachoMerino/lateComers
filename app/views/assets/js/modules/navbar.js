@@ -9,7 +9,6 @@ const navbar = `<nav class="navbar fixed-top navbar-expand-lg navbar-light bg-li
                     <div class="navbar-nav">
                       <a id="new" class="nav-item nav-link" href="#">New</a>
                       <a id="history" class="nav-item nav-link" href="#">History</a>
-                      <a id="topStudents" class="nav-item nav-link" href="#">Top Students</a>
                       <a id="logout" class="nav-item nav-link" href="#">Logout</a>
                     </div>
                   </div>

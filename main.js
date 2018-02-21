@@ -4,10 +4,10 @@ const bodyParser = require('body-parser');
 const LateComer = require('./app/models/latecomersmodel');
 const session = require('express-session');
 const cookieParser = require('cookie-parser');
+const randomstring = require('randomstring');
 
 // create express app
 const app = express();
-const router = express.Router();
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: true }))
 
@@ -21,7 +21,6 @@ app.use(session({
 
 // parse application/json
 app.use(bodyParser.json())
-app.use("/", router);
 
 
 
@@ -42,12 +41,12 @@ mongoose.connection.once('open', () => {
 })
 
 // define a simple route
-router.get('/api', (req, res) => {
+app.get('/api', (req, res) => {
   res.json({ 'message': 'Welcome to Your Project application REST-ful API.' });
 });
 
 // Web
-router.get("/", (req, res) => {
+app.get("/", (req, res) => {
   res.sendFile('index.html', { root: 'app/views' })
 });
 
@@ -60,30 +59,29 @@ function auth(req, res, next) {
   }
 }
 
-router.post('/login', (req, res) => {
+app.post('/login', (req, res) => {
   if (!req.body.username || !req.body.password) {
     res.json({ error: 'Username and Password required' });
   } else if (req.body.username === 'nacho' && req.body.password === 'qwerty') {
     req.session.user = 'nacho';
     req.session.admin = true;
     res.sendStatus(200);
-    console.log(JSON.stringify(req.session));
   } else {
-    res.status(403).send('wrong pass/user');;
+    res.status(403).send('wrong pass/user');
   }
 });
 
-router.get('/logout', (req, res) => {
-  console.log('loging out');
+app.get('/logout', (req, res) => {
   req.session.destroy();
-  res.send('logout successful');
+  res.status(304);
 });
 
-router.get('/content', auth, (req, res) => {
-  res.send('Join the dark side............ we have cookies!!!');
+app.get('/content', auth, (req, res) => {
+  const rndString = randomstring.generate(20);
+  res.send(rndString);
 });
 
-router.post('/add', (req, res) => {
+app.post('/add', (req, res) => {
 if (!req.body) {
     return res.send('You send me empty data');
   }
@@ -97,15 +95,14 @@ if (!req.body) {
       throw err;
     }
   });
-  console.log(`Student ${newLateComer.name} has been saved successfully`);
   res.send({ message: `Student ${newLateComer.name} has been saved successfully` });
 });
 
 
-router.get('/history', (req, res) => {
+app.get('/history', (req, res) => {
   LateComer.find((err, data) => {
     if (err) {
-      res.status(500).send({ error: 'some error occurred while retrieving students' });
+      res.status(500).send('some error occurred while retrieving students');
     } else {
       res.send(data);
     }
@@ -113,7 +110,7 @@ router.get('/history', (req, res) => {
 });
 
 
-router.delete('/student/:studentId', (req, res) => {
+app.delete('/student/:studentId', (req, res) => {
   if (!req.params) {
     return res.send('Fields can not be empty');
   }
